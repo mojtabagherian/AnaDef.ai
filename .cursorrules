@@ -1,0 +1,119 @@
+# AI Agent Creator Instructions for Hackathon Partner Integration
+
+This guide focuses on creating AI agents using the official hackathon partner technologies to maximize prize eligibility and create a robust analytics solution.
+
+1. **Core Components Planning**:
+   - Plan step-by-step integration of partner technologies
+   - Define which partner tools each agent component will use
+   - Ensure compatibility between different partner technologies
+   - Ask for clarification if unsure about any partner technology integration
+
+2. **Development Stack**:
+   A. Coinbase Developer Platform:
+   - AgentKit for core agent functionality
+   - CDP SDK for wallet and transaction management
+   - OnchainKit for frontend components (if needed)
+   - Base network for deployment
+
+   B. Covalent:
+   - AI Agent SDK for data analysis
+   - Token Balances Tool
+   - NFT Holdings Tool
+   - Transaction History Tool
+   - Historical Token Price Tool
+
+   C. The Graph:
+   - Subgraph querying for specific protocol data
+   - GraphQL integration
+   - Custom data indexing if needed
+
+3. **Project Structure**:
+analytics_agent/
+├── agent/
+│   ├── init.py
+│   ├── agent.ts
+│   └── tools/
+│       ├── covalent_tools.ts
+│       ├── graph_queries.ts
+│       └── agentkit_actions.ts
+├── frontend/
+│   └── onchain_components/
+└── deployment/
+└── base_config/
+Copy
+4. **Tool Development**:
+- Create tools using partner SDKs and APIs
+- Test each tool independently
+- Ensure proper error handling
+- Document API key requirements
+
+5. **Integration Process**:
+A. AgentKit Integration:
+- Setup agent configuration
+- Define agent actions
+- Implement conversation handlers
+
+B. Covalent Integration:
+- Initialize Covalent client
+- Implement data fetching tools
+- Setup caching if needed
+
+C. The Graph Integration:
+- Setup GraphQL client
+- Define query templates
+- Implement subgraph handlers
+
+6. **Testing**:
+- Test each partner integration separately
+- Verify cross-platform compatibility
+- Check prize requirement compliance
+- Monitor performance metrics
+
+7. **Deployment**:
+- Deploy to Base network
+- Setup monitoring
+- Implement logging
+- Verify partner tool functionality
+
+# Partner Documentation References
+- AgentKit: https://docs.cdp.coinbase.com/agentkit/docs/welcome
+- Covalent: https://cxt.build/docs
+- The Graph: https://thegraph.com/docs/
+
+# Important Notes:
+- Always check latest partner documentation
+- Prioritize use of partner tools over external libraries
+- Focus on features that align with prize criteria
+- Maintain clean integration between partner tools
+
+Remember: The goal is to create a functional analytics agent while maximizing use of partner technologies for prize eligibility.
+
+# Testing Requirements:
+1. Each partner tool must be tested independently
+2. Cross-platform integration tests
+3. Performance benchmarking
+4. Prize requirement verification
+
+# Development Process:
+1. Setup development environment
+2. Initialize partner SDKs
+3. Create basic agent structure
+4. Integrate data sources
+5. Implement analysis logic
+6. Add frontend components
+7. Deploy to Base network
+8. Test and validate
+
+# Error Handling:
+- Implement proper error handling for each partner tool
+- Log errors appropriately
+- Provide meaningful error messages
+- Handle API rate limits
+
+# Security Considerations:
+- Secure API key management
+- Implement rate limiting
+- Handle sensitive data appropriately
+- Follow partner security guidelines
+
+Never output code snippets in chat. Always create or modify actual files in the file system.

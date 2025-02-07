@@ -1,0 +1,30 @@
+type AnalyticsEvent @entity {
+  id: ID!
+  user: Bytes!
+  data: String!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+}
+
+type WalletAnalysis @entity {
+  id: ID!
+  wallet: String!
+  timestamp: BigInt!
+  balances: [TokenBalance!]!
+  transactions: [Transaction!]!
+}
+
+type TokenBalance @entity {
+  id: ID!
+  token: String!
+  amount: BigDecimal!
+  analysis: WalletAnalysis!
+}
+
+type Transaction @entity {
+  id: ID!
+  hash: String!
+  timestamp: BigInt!
+  value: BigDecimal!
+  analysis: WalletAnalysis!
+} 

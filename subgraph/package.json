@@ -1,0 +1,18 @@
+{
+  "name": "andefiai-subgraph",
+  "version": "0.1.0",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ --deploy-key 3fbc5f9545e3319e438cbac54911e5fa andefiai",
+    "create-local": "graph create --node http://localhost:8020/ andefiai",
+    "remove-local": "graph remove --node http://localhost:8020/ andefiai",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 andefiai"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-ts": "^0.31.0"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.95.0"
+  }
+} 

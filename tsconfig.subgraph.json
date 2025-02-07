@@ -1,0 +1,16 @@
+{
+  "extends": "./node_modules/@graphprotocol/graph-ts/tsconfig.json",
+  "compilerOptions": {
+    "types": ["@graphprotocol/graph-ts"],
+    "rootDirs": ["./src", "./generated"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outDir": "dist"
+  },
+  "include": ["src/mapping.ts", "generated/**/*"],
+  "files": ["src/mapping.ts"]
+} 
