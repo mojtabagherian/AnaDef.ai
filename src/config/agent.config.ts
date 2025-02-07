@@ -2,10 +2,17 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Helper function to clean private key
+function cleanPrivateKey(key: string | undefined): string {
+  if (!key) return '';
+  // Remove any quotes and normalize newlines
+  return key.replace(/["']/g, '').replace(/\\n/g, '\n');
+}
+
 export const config = {
   agentKit: {
-    name: process.env.CDP_API_KEY_NAME,
-    privateKey: process.env.CDP_API_KEY_PRIVATE_KEY,
+    name: process.env.CDP_API_KEY_NAME?.trim(),
+    privateKey: cleanPrivateKey(process.env.CDP_API_KEY_PRIVATE_KEY),
     model: {
       provider: 'openai',
       model: 'gpt-4',
@@ -20,6 +27,7 @@ export const config = {
     endpoint: process.env.GRAPH_ENDPOINT
   },
   base: {
-    networkId: process.env.NETWORK_ID || 'base-sepolia'
+    networkId: 'base-sepolia', // Hardcode for now
+    rpcUrl: 'https://sepolia.base.org'
   }
 };

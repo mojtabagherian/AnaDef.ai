@@ -10,8 +10,13 @@ dotenv.config();
 async function main() {
   try {
     const agent = new AnalyticsAgent();
-    const result = await agent.analyze("Your prompt here");
+    
+    // Example wallet analysis
+    const walletAddress = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
+    console.log(`Analyzing wallet: ${walletAddress}`);
+    const result = await agent.analyzeWallet(walletAddress);
     console.log('Analysis result:', result);
+
   } catch (error) {
     console.error('Error:', error);
   }

@@ -173,3 +173,10 @@ node_modules
 
 # Coinbase API key file
 coinbase_cloud_api_key.json
+
+.env.local
+.env.*.local
+*.log
+.DS_Store
+coverage/
+temp/
