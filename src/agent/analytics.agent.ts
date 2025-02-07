@@ -26,10 +26,11 @@ export class AnalyticsAgent {
         actionProviders: []
       });
 
-      // Initialize LangChain components
+      // Initialize LangChain components with OpenAI API key
       this.llm = new ChatOpenAI({
         modelName: config.agentKit.model.model,
-        temperature: config.agentKit.model.temperature
+        temperature: config.agentKit.model.temperature,
+        openAIApiKey: process.env.OPENAI_API_KEY
       });
 
       this.tools = await getLangChainTools(this.agent);
