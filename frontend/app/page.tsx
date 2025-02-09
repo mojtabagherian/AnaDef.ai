@@ -4,8 +4,8 @@ import { useState } from "react"
 import Navbar from "./components/Navbar"
 import SearchBar from "./components/SearchBar"
 import AnalyticsDisplay from "./components/AnalyticsDisplay"
-import GraphVisualization from "./components/GraphVisualization"
 import NetworkStatus from "./components/NetworkStatus"
+import { AiChatBox } from "./components/AiChatBox"
 
 interface AnalyticsData {
   analysis: string
@@ -39,14 +39,17 @@ interface AnalyticsData {
     blockHeight: string
     tps: string
   }
+  walletAddress?: string
 }
 
 export default function Home() {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
+  const [address, setAddress] = useState('')
 
   const handleAnalyze = (data: AnalyticsData) => {
     console.log("Received analytics data:", data)
     setAnalyticsData(data)
+    setAddress(data.walletAddress || '')
   }
 
   return (
@@ -63,14 +66,10 @@ export default function Home() {
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <AnalyticsDisplay data={analyticsData} />
-
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-[#059669]/10">
-            <h2 className="text-xl font-semibold text-[#059669] mb-6 flex items-center">
-              <span className="mr-2">🔍</span>
-              Graph Visualization
-            </h2>
-            <GraphVisualization data={analyticsData} />
-          </div>
+          <AiChatBox 
+            walletData={analyticsData} 
+            walletAddress={address} 
+          />
         </div>
 
         {/* Network Status */}
