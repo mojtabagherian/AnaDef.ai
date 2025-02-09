@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 3, 7, 18;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #f0f4ff 0%, #f0fdf4 100%);
+}
+
+@layer utilities {
+  .bg-gradient-blockchain {
+    background: linear-gradient(135deg, #1e40af, #059669);
+  }
+}
+

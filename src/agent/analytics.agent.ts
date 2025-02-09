@@ -1,9 +1,17 @@
 import { AgentKit, CdpWalletProvider } from '@coinbase/agentkit';
 import { getLangChainTools } from '@coinbase/agentkit-langchain';
 import { ChatOpenAI } from '@langchain/openai';
-import { CovalentClient, Chains } from '@covalenthq/client-sdk';
+import { CovalentClient, Chains, BalancesResponse, TransactionsResponse } from '@covalenthq/client-sdk';
 import { GraphService } from '../services/graph.service';
 import { config } from '../config/agent.config';
+import { SUPPORTED_NETWORKS, SupportedNetwork, NetworkData, isActiveNetwork, getChainId } from '../services/network.service';
+
+interface NetworkResult {
+  network: SupportedNetwork;
+  balances: BalancesResponse;
+  transactions: TransactionsResponse;
+  error: boolean;
+}
 
 export class AnalyticsAgent {
   private agent?: AgentKit;
@@ -90,41 +98,104 @@ export class AnalyticsAgent {
   }
 
   async analyzeWallet(address: string) {
-    await this.initialized;
-    
-    if (!this.llm || !this.tools) {
-      throw new Error('Agent not initialized');
-    }
-
     try {
-      // Get data from both Covalent and The Graph
-      const [balances, transactions, graphData] = await Promise.all([
-        this.tools[0].func(address),
-        this.tools[1].func(address),
-        this.graph.getWalletAnalytics(address)
-      ]);
+      console.log("Received analysis request for address:", address);
+      await this.initialized;
+      
+      if (!this.llm || !this.tools) {
+        throw new Error('Agent not initialized');
+      }
 
-      // Create analysis prompt
+      const networkResults = await Promise.allSettled(
+        SUPPORTED_NETWORKS.map(async (network) => {
+          try {
+            const [balances, transactions] = await Promise.all([
+              this.covalent.BalanceService.getTokenBalancesForWalletAddress(
+                network as Chains,
+                address
+              ),
+              this.covalent.TransactionService.getTransactionsForAddressV3(
+                network as Chains,
+                address,
+                1
+              )
+            ]);
+
+            return {
+              network,
+              balances: balances.data,
+              transactions: transactions.data,
+              error: false
+            };
+          } catch (error) {
+            console.error(`Error fetching data for ${network}:`, error);
+            return {
+              network,
+              balances: { items: [] } as BalancesResponse,
+              transactions: { items: [] } as TransactionsResponse,
+              error: true
+            };
+          }
+        })
+      );
+
+      const activeNetworks = networkResults
+        .filter((result): result is PromiseFulfilledResult<NetworkResult> => 
+          result.status === 'fulfilled')
+        .map(result => result.value)
+        .filter(data => !data.error && 
+          (data.balances?.items?.length > 0 || data.transactions?.items?.length > 0));
+
       const analysisPrompt = `
-        Analyze the following wallet data on Base Sepolia network:
-        
+        Analyze this wallet's activity across ${activeNetworks.length} networks:
         Address: ${address}
-        
-        Token Balances (Covalent): ${JSON.stringify(balances, null, 2)}
-        Recent Transactions (Covalent): ${JSON.stringify(transactions, null, 2)}
-        
-        Protocol Analytics (The Graph): ${JSON.stringify(graphData, null, 2)}
-        
-        Provide a detailed analysis including:
-        1. Total value held in tokens
-        2. Most significant holdings
+
+        ${activeNetworks.map(data => `
+          Network: ${data.network}
+          Balances: ${data.balances?.items?.length || 0} tokens
+          Recent Transactions: ${data.transactions?.items?.length || 0} transactions
+        `).join('\n')}
+
+        Provide a focused analysis of:
+        1. Active networks and their usage
+        2. Main token holdings
         3. Recent transaction patterns
-        4. DeFi activities and protocol interactions
-        5. Historical analytics trends
-      `;
+        4. Cross-chain activity patterns
+      `.trim();
 
       const response = await this.llm.predict(analysisPrompt);
-      return response;
+
+      // Format the response to match frontend expectations
+      const formattedResponse = {
+        analysis: response || '',
+        tokenBalances: activeNetworks.flatMap(network => 
+          network.balances?.items?.map(item => ({
+            contract_name: item.contract_name || '',
+            contract_ticker_symbol: item.contract_ticker_symbol || '',
+            balance: item.balance || '0',
+            quote: parseFloat(item.quote?.toString() || '0')
+          })) || []
+        ),
+        recentTransactions: activeNetworks.flatMap(network => 
+          network.transactions?.items?.map(tx => ({
+            hash: tx.tx_hash || '',
+            from_address: tx.from_address || '',
+            to_address: tx.to_address || '',
+            value: tx.value || '0',
+            timestamp: tx.block_signed_at || ''
+          })) || []
+        ),
+        protocolAnalytics: {
+          networks: activeNetworks.map(network => ({
+            name: network.network,
+            balanceCount: network.balances?.items?.length || 0,
+            transactionCount: network.transactions?.items?.length || 0
+          }))
+        }
+      };
+
+      console.log("Formatted response:", JSON.stringify(formattedResponse, null, 2));
+      return formattedResponse;
     } catch (error) {
       console.error('Error in wallet analysis:', error);
       throw error;
